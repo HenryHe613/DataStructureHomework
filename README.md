@@ -1,4 +1,4 @@
-# DataStructureHomework
+# 数据结构作业集
 
 ## LinkedListRemoveDuplicates.c
 
