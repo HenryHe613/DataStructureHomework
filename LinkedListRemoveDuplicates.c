@@ -1,7 +1,6 @@
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
-// #include <locale.h>
 
 struct ListData{
     int data;
@@ -130,7 +129,6 @@ void waitToReturn(){
 }
 
 int main(){
-    // setlocale(LC_ALL, "");
     ListNode* head=createListNode();
     while(1){
         clearScreen();
