@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
+// #include <locale.h>
 
 struct ListData{
     int data;
@@ -119,7 +120,7 @@ void clearScreen() {
 }
 
 void printInstruction(){
-    printf("C语言链表去重\n\n1. 打印链表\n2. 存入新数据\n3. 退出程序\n\n您的操作: ");
+    printf("C Language Linked List Deduplication\n\n1. Print Linked List\n2. Store New Data\n3. Exit Program\n\nYour Operation: ");
 }
 
 void waitToReturn(){
@@ -129,6 +130,7 @@ void waitToReturn(){
 }
 
 int main(){
+    // setlocale(LC_ALL, "");
     ListNode* head=createListNode();
     while(1){
         clearScreen();
@@ -139,17 +141,17 @@ int main(){
         clearScreen();
         if(type==1){
             printListNode(head);
-            printf("输出完成,按回车键继续...");
+            printf("Output complete, press Enter to continue...");
             waitToReturn();
         }else if(type==2){
-            printf("输入插入的数据,回车结束.\n");
+            printf("Input the data to insert, press Enter to finish.\n");
             ListNode* newListNode=input();
             if(newListNode==NULL)
-                printf("请输入纯数字,按回车键继续...");
+                printf("Please enter pure numbers, press Enter to continue...");
             else if(insert(head,newListNode)==1)
-                printf("成功插入,按回车键继续...");
+                printf("Successfully inserted, press Enter to continue...");
             else
-                printf("插入失败,因为有重复节点,按回车键继续...");
+                printf("Insertion failed due to a duplicate node, press Enter to continue...");
             waitToReturn();
         }else if(type==3){
             return 0;
