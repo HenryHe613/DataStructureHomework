@@ -1,6 +1,10 @@
 #include<stdio.h>
 #include<string.h>
-#include <stdlib.h>
+#include<stdlib.h>
+#ifdef _WIN32
+#include<windows.h>
+#endif
+
 
 const int LEN = strlen("└──");
 
@@ -23,11 +27,11 @@ void pretty_print(TreeNode* root, char* pre, int depth){
         printf("%c", pre[i]);
     }
     printf("%d\n", root->data);
-    for (int i = 0; i < depth * 3; i += 3) { // 每次检查三个字符
-        if (strncmp(pre + i, "├──", 9) == 0) {
-            strncpy(pre + i, "│  ", 9); // 替换为 "│  "
-        } else if (strncmp(pre + i, "└──", 9) == 0) {
-            strncpy(pre + i, "   ", 9); // 替换为 "   "
+    for(int i=0;i<depth*3;i+=3){
+        if(strncmp(pre+i,"├──",9)==0){
+            strncpy(pre+i,"│  ",9);
+        }else if(strncmp(pre+i,"└──",9)==0){
+            strncpy(pre+i,"   ",9);
         }
     }
     if(root->left != NULL){
@@ -45,6 +49,9 @@ void pretty_print(TreeNode* root, char* pre, int depth){
 }
 
 int main(){
+    #ifdef _WIN32
+    SetConsoleOutputCP(CP_UTF8);
+    #endif
     TreeNode* root = createNode(1);
     root->left = createNode(2);
     root->right = createNode(3);
@@ -56,7 +63,9 @@ int main(){
     root->right->left->left = createNode(8);
     root->right->left->right = createNode(9);
     root->right->right = createNode(7);
-    char pre[100];
+    char pre[20];
     pretty_print(root, pre, 0);
+    printf("Press ENTER to exit...\n");
+    getchar();
     return 0;
 }
