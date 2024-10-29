@@ -25,7 +25,7 @@ void clearScreen() {
 void print(int x, int y, char* s){
     printf("\033[%d;%dH%s", x+1, y*2+1, s);
     fflush(stdout);
-    usleep(200000);
+    usleep(40000);
 }
 
 // 栈的实现
@@ -171,6 +171,8 @@ void print_matrix(int n){
                 printf("██");
             else
                 printf("  ");
+            fflush(stdout);
+            usleep(5000);
         }
         printf("\n");
     }
@@ -183,51 +185,63 @@ void generate_matrix(int n){
     int end_x = n-2, end_y = n-1;
     // matrix[begin_x][begin_y] = 0;
     // matrix[end_x][end_y] = 0;
-    int directions[4][2] = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+    int go_directions[4][2] = {{0,-1},{-1,0},{0,1},{1,0}};
+    int test_directions[4][2] = {{-1,-1},{-1,1},{1,1},{1,-1}};
     int detect_directions[9][2] = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}, {0, 0}};
     int now_x = begin_x, now_y = begin_y;
     while(now_x!=end_x || now_y!=end_y){
-        int direction = rand()%4;
-        int next_x = now_x + directions[direction][0];
-        int next_y = now_y + directions[direction][1];
-        if(next_x<1 || next_x>=n-1 || next_y<1 || next_y>=n-1)
-            continue;
-        for(int i=0;i<9;i++){
-            if(next_x+detect_directions[i][0]<1 || next_x+detect_directions[i][0]>=n-1 || next_y+detect_directions[i][1]<1 || next_y+detect_directions[i][1]>=n-1)
-                continue;
-            if(matrix[next_x+detect_directions[i][0]][next_y+detect_directions[i][1]]==0)
-                continue;
+        int next_x, next_y;
+        int arr_test[4] = {1,1,1,1};
+        for(int i=0;i<4;i++){
+            int test_x = now_x + test_directions[i][0];
+            int test_y = now_y + test_directions[i][1];
+            if(matrix[test_x][test_y]==0){
+                arr_test[i]=0;
+                arr_test[(i+1)%4]=0;
+            }
         }
+        int flag = 1;
+        for(int i=0;i<4;i++){
+            if(arr_test[i]==1){
+                flag = 0;
+            }
+        }
+        if(flag) return;
+        do{
+            int direction = rand()%4;
+            while(arr_test[direction]==0)
+                direction = rand()%4;
+            next_x = now_x + go_directions[direction][0];
+            next_y = now_y + go_directions[direction][1];
+        }while(next_x != now_x && next_y != now_y || !(next_x>0 && next_x<n-1 && next_y>0 && next_y<n-1));
+        
+        // for(int i=0;i<9;i++){
+        //     if(next_x+detect_directions[i][0]<1 || next_x+detect_directions[i][0]>=n-1 || next_y+detect_directions[i][1]<1 || next_y+detect_directions[i][1]>=n-1)
+        //         continue;
+        //     if(matrix[next_x+detect_directions[i][0]][next_y+detect_directions[i][1]]==0)
+        //         continue;
+        // }
         matrix[next_x][next_y] = 0;
+        print(next_x, next_y, "  ");
         now_x = next_x;
         now_y = next_y;
-        print(now_x, now_y, "☒ ");
     }
 }
 
 int main(){
     srand(time(NULL));  // 设置随机数种子
     clearScreen();
-    printf("Choose a mode.\n1. Manual input\n2. Random input\nYour choice: ");
-    int mode = 0;
-    scanf("%d", &mode);
-    if(mode==1)
-        solve_manual_matrix();
-    else if(mode==2){
-        solve_random_matrix();
-    }
-    // int n = 20;
-    // init_matrix(n);
-    // print_matrix(n);
-    // generate_matrix(n);
-    // for(int i=0; i<n; i++){
-    //     for(int j=0; j<n; j++){
-    //         if(matrix[i][j]==1)
-    //             printf("██");
-    //         else
-    //             printf("  ");
-    //     }
-    //     printf("\n");
+    // printf("Choose a mode.\n1. Manual input\n2. Random input\nYour choice: ");
+    // int mode = 0;
+    // scanf("%d", &mode);
+    // if(mode==1)
+    //     solve_manual_matrix();
+    // else if(mode==2){
+    //     solve_random_matrix();
     // }
+    int n = 20;
+    init_matrix(n);
+    print_matrix(n);
+    generate_matrix(n);
     return 0;
 }
