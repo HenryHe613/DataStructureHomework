@@ -48,21 +48,35 @@ void pretty_print(TreeNode* root, char* pre, int depth){
     }
 }
 
+TreeNode* get_parent_node(TreeNode* root, int location){
+    if(location == 0){
+        return NULL;
+    }
+    int depth = 0;
+    int temp_location = location;
+    while(temp_location){
+        temp_location = (temp_location-1)/2;
+        depth++;
+    }
+}
+
 int main(){
     #ifdef _WIN32
     SetConsoleOutputCP(CP_UTF8);
     #endif
-    TreeNode* root = createNode(1);
-    root->left = createNode(2);
-    root->right = createNode(3);
-    root->left->left = createNode(4);
-    root->left->right = createNode(5);
-    root->left->right->left = createNode(10);
-    root->left->right->right = createNode(11);
-    root->right->left = createNode(6);
-    root->right->left->left = createNode(8);
-    root->right->left->right = createNode(9);
-    root->right->right = createNode(7);
+    int n;
+    printf("Enter the size of nodes in the binary tree: ");
+    scanf("%d", &n);
+
+    int* arr = (int*)malloc(n*sizeof(int));
+    printf("Enter the elements of the binary tree, \neach element should be divided by a space, \n-1 for empty node: \n");
+
+    for(int i=0;i<n;i++){
+        scanf("%d", &arr[i]);
+    }
+
+    TreeNode* root = createNode(arr[0]);
+    
     char pre[20];
     pretty_print(root, pre, 0);
     printf("Press ENTER to exit...\n");
