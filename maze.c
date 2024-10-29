@@ -8,6 +8,7 @@
 const int NMAX = 50;
 int matrix[NMAX][NMAX];
 int n=20;
+int queue_size = 0;
 // 1为墙，0为通路，2为走过的路，3为死路
 
 int directions[4][2] = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
@@ -25,7 +26,7 @@ void clearScreen() {
 void print(int x, int y, char* s){
     printf("\033[%d;%dH%s", x+1, y*2+1, s);
     fflush(stdout);
-    usleep(40000);
+    usleep(40000/queue_size);
 }
 
 // 栈的实现
@@ -61,7 +62,6 @@ typedef struct queue{
 }queue;
 queue* head = NULL;
 queue* tail = NULL;
-int queue_size = 0;
 void queue_push(int x, int y){
     queue* temp = (queue*)malloc(sizeof(queue));
     temp->x = x;
@@ -204,19 +204,26 @@ void find_next_step(int now_x, int now_y, int* next_x_ref, int* next_y_ref, int*
     int directions_count = 0;
     for(int i=0;i<4;i++)
         directions_count += available_directions[i];
-    if(directions_count==0) return;
+    if(directions_count == 0) return;
     int next_x, next_y;
+    int count = 0;
     while(1){
+        printf("\033[%d;%dH%d", n+3, 1, count++);
+        fflush(stdout);
+        usleep(40000);
+        if(count == 20){
+            printf("\033[%d;%dH%d %d %d", n+4, 1, now_x,now_y,directions_count);
+            fflush(stdout);
+            getchar();
+
+            return;
+        }
+
         int direction = rand()%4;
         while(available_directions[direction]==0)
             direction = rand()%4;
         next_x = now_x + go_directions[direction][0];
         next_y = now_y + go_directions[direction][1];
-
-        // printf("\033[%d;%dH%s%d", n+1, 0, "debug:", direction);
-        // fflush(stdout);
-        // usleep(40000);
-
         if(next_x<1 || next_x>=n-1 || next_y<1 || next_y>=n-1){
             if(directions_count==1) return;
             else continue;
@@ -243,16 +250,23 @@ void generate_matrix(int n){
     int now_x = 1, now_y = 0;
     int next_x, next_y, status;
     queue_push(now_x, now_y);
+    int count = 0;
     while(queue_size>0){
+        int random = rand()%4;
         queue_pop(&now_x, &now_y);
+        if(random==0){
+            find_next_step(now_x, now_y, &next_x, &next_y, &status);
+            if(status==0)
+                queue_push(next_x, next_y);
+        }
         find_next_step(now_x, now_y, &next_x, &next_y, &status);
         if(status==0)
             queue_push(next_x, next_y);
-        // printf("\033[%d;%dH%s%d", n+2, 0, "queue_size: ", queue_size);
-        // fflush(stdout);
-        // usleep(40000);
+        
+        printf("\033[%d;%dH%d", n+2, 1, count++);
+        fflush(stdout);
+        usleep(40000);
     }
-    // printf("end\n");
 }
 
 int main(){
