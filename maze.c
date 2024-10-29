@@ -133,17 +133,29 @@ void refresh(){
 
 
 int solve_matrix(int x,int y){
+    // 递归解决迷宫
     matrix[x][y] = 2;
     refresh();
     if(x==n-2 && y==n-1)
         return 1;
+    int random;
+    int cur = 0;
+    int arr[4] = {-1,-1,-1,-1};
+    while(cur!=4){
+        random = rand()%4;
+        int i;
+        for(i=0;i<cur;i++)
+            if(arr[i]==random)
+                break;
+        if(i==cur) arr[cur++] = random;
+    }
     for(int i=0;i<4;i++){
-        int nx = x + directions[i][0];
-        int ny = y + directions[i][1];
+        int nx = x + directions[arr[i]][0];
+        int ny = y + directions[arr[i]][1];
         if(nx<0 || nx>=n || ny<0 || ny>=n)
             continue;
         if(matrix[nx][ny]==0){
-            stack_push(nx, ny, i);
+            stack_push(nx, ny, arr[i]);
             if(solve_matrix(nx, ny)) return 1;
             stack_pop();
             matrix[nx][ny]=3;
@@ -229,7 +241,7 @@ void generate_matrix(){
     queue_push(1,0);
     queue_push(n-2,n-1);
     while(queue_size>0){
-        int random = rand()%5;
+        int random = rand()%3;
         queue_pop(&now_x, &now_y);
         if(random==0){
             find_next_step(now_x, now_y, &next_x, &next_y, &status);
