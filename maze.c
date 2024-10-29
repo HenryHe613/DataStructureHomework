@@ -175,7 +175,7 @@ void print_matrix(int n){
             else
                 printf("  ");
             fflush(stdout);
-            usleep(1000);
+            usleep(800);
         }
         printf("\n");
     }
@@ -192,6 +192,8 @@ void find_next_step(int now_x, int now_y, int* next_x_ref, int* next_y_ref, int*
         int test_y = now_y + go_directions[i][1];
         if(matrix[test_x][test_y]==0)
             available_directions[i]=0;
+        else if(test_x == 0 || test_x == n-1 || test_y == 0 || test_y == n-1)
+            available_directions[i]=0;
     }
     for(int i=0;i<4;i++){
         int test_x = now_x + detect_directions[i][0];
@@ -206,19 +208,7 @@ void find_next_step(int now_x, int now_y, int* next_x_ref, int* next_y_ref, int*
         directions_count += available_directions[i];
     if(directions_count == 0) return;
     int next_x, next_y;
-    int count = 0;
     while(1){
-        printf("\033[%d;%dH%d", n+3, 1, count++);
-        fflush(stdout);
-        usleep(40000);
-        if(count == 20){
-            printf("\033[%d;%dH%d %d %d", n+4, 1, now_x,now_y,directions_count);
-            fflush(stdout);
-            getchar();
-
-            return;
-        }
-
         int direction = rand()%4;
         while(available_directions[direction]==0)
             direction = rand()%4;
@@ -247,12 +237,12 @@ void generate_matrix(int n){
     matrix[end_x][end_y] = 0;
     print(begin_x, begin_y, "▒▒");
     print(end_x, end_y, "▒▒");
-    int now_x = 1, now_y = 0;
+    int now_x, now_y;
     int next_x, next_y, status;
-    queue_push(now_x, now_y);
-    int count = 0;
+    queue_push(1,0);
+    queue_push(n-2,n-1);
     while(queue_size>0){
-        int random = rand()%4;
+        int random = rand()%2;
         queue_pop(&now_x, &now_y);
         if(random==0){
             find_next_step(now_x, now_y, &next_x, &next_y, &status);
@@ -262,10 +252,6 @@ void generate_matrix(int n){
         find_next_step(now_x, now_y, &next_x, &next_y, &status);
         if(status==0)
             queue_push(next_x, next_y);
-        
-        printf("\033[%d;%dH%d", n+2, 1, count++);
-        fflush(stdout);
-        usleep(40000);
     }
 }
 
