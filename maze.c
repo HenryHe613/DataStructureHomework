@@ -7,7 +7,7 @@
 
 const int NMAX = 50;
 int matrix[NMAX][NMAX];
-int n=0;
+int n=20;
 // 1为墙，0为通路，2为走过的路，3为死路
 
 int directions[4][2] = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
@@ -61,6 +61,7 @@ typedef struct queue{
 }queue;
 queue* head = NULL;
 queue* tail = NULL;
+int queue_size = 0;
 void queue_push(int x, int y){
     queue* temp = (queue*)malloc(sizeof(queue));
     temp->x = x;
@@ -73,11 +74,12 @@ void queue_push(int x, int y){
         tail->next = temp;
         tail = temp;
     }
+    queue_size++;
 }
 void queue_pop(int* x, int* y){
     if(head==NULL){
-        x = NULL;
-        y = NULL;
+        *x = -1;
+        *y = -1;
         return;
     }
     queue* temp = head;
@@ -85,6 +87,7 @@ void queue_pop(int* x, int* y){
     *x = temp->x;
     *y = temp->y;
     free(temp);
+    queue_size--;
 }
 
 void refresh(){
@@ -178,6 +181,56 @@ void print_matrix(int n){
     }
 }
 
+void find_next_step(int now_x, int now_y, int* next_x_ref, int* next_y_ref, int* status){
+    *status = 1;
+    int go_directions[4][2] = {{0,-1},{-1,0},{0,1},{1,0}};
+    int detect_directions[4][2] = {{-1,-1},{-1,1},{1,1},{1,-1}};
+    //int detect_directions[9][2] = {{0,1},{1,0},{0,-1},{-1,0},{1,1},{1,-1},{-1,1},{-1,-1},{0,0}};
+    int available_directions[4] = {1,1,1,1};
+    for(int i=0;i<4;i++){
+        int test_x = now_x + go_directions[i][0];
+        int test_y = now_y + go_directions[i][1];
+        if(matrix[test_x][test_y]==0)
+            available_directions[i]=0;
+    }
+    for(int i=0;i<4;i++){
+        int test_x = now_x + detect_directions[i][0];
+        int test_y = now_y + detect_directions[i][1];
+        if(matrix[test_x][test_y]==0){
+            available_directions[i]=0;
+            available_directions[(i+1)%4]=0;
+        }
+    }
+    int directions_count = 0;
+    for(int i=0;i<4;i++)
+        directions_count += available_directions[i];
+    if(directions_count==0) return;
+    int next_x, next_y;
+    while(1){
+        int direction = rand()%4;
+        while(available_directions[direction]==0)
+            direction = rand()%4;
+        next_x = now_x + go_directions[direction][0];
+        next_y = now_y + go_directions[direction][1];
+
+        // printf("\033[%d;%dH%s%d", n+1, 0, "debug:", direction);
+        // fflush(stdout);
+        // usleep(40000);
+
+        if(next_x<1 || next_x>=n-1 || next_y<1 || next_y>=n-1){
+            if(directions_count==1) return;
+            else continue;
+        }
+        break;
+    }
+    matrix[next_x][next_y] = 0;
+    print(next_x, next_y, "  ");
+    *next_x_ref = next_x;
+    *next_y_ref = next_y;
+    *status = 0;
+    return;
+}
+
 void generate_matrix(int n){
     if(n>NMAX)
         n = NMAX;
@@ -185,53 +238,21 @@ void generate_matrix(int n){
     int end_x = n-2, end_y = n-1;
     matrix[begin_x][begin_y] = 0;
     matrix[end_x][end_y] = 0;
-    print(begin_x, begin_y, "  ");
-    print(end_x, end_y, "  ");
-    int go_directions[4][2] = {{0,-1},{-1,0},{0,1},{1,0}};
-    int test_directions[4][2] = {{-1,-1},{-1,1},{1,1},{1,-1}};
-    int detect_directions[9][2] = {{0,1},{1,0},{0,-1},{-1,0},{1,1},{1,-1},{-1,1},{-1,-1},{0,0}};
-    int now_x = begin_x, now_y = begin_y;
-    while(now_x!=end_x || now_y!=end_y){
-        int next_x, next_y;
-        int arr_test[4] = {1,1,1,1};
-        for(int i=0;i<4;i++){
-            int test_x = now_x + go_directions[i][0];
-            int test_y = now_y + go_directions[i][1];
-            if(matrix[test_x][test_y]==0){
-                arr_test[i]=0;
-            }
-        }
-        for(int i=0;i<4;i++){
-            int test_x = now_x + test_directions[i][0];
-            int test_y = now_y + test_directions[i][1];
-            if(matrix[test_x][test_y]==0){
-                arr_test[i]=0;
-                arr_test[(i+1)%4]=0;
-            }
-        }
-        int directions_count = 0;
-        for(int i=0;i<4;i++)
-            directions_count += arr_test[i];
-        if(directions_count==0) return;
-        while(1){
-            int direction = rand()%4;
-            while(arr_test[direction]==0)
-                direction = rand()%4;
-            next_x = now_x + go_directions[direction][0];
-            next_y = now_y + go_directions[direction][1];
-            if(next_x<1 || next_x>=n-1 || next_y<1 || next_y>=n-1){
-                if(directions_count==1) break;
-                else continue;
-            }
-            if(next_x == now_x && next_y == now_y) continue;
-            break;
-        }
-        
-        matrix[next_x][next_y] = 0;
-        print(next_x, next_y, "  ");
-        now_x = next_x;
-        now_y = next_y;
+    print(begin_x, begin_y, "▒▒");
+    print(end_x, end_y, "▒▒");
+    int now_x = 1, now_y = 0;
+    int next_x, next_y, status;
+    queue_push(now_x, now_y);
+    while(queue_size>0){
+        queue_pop(&now_x, &now_y);
+        find_next_step(now_x, now_y, &next_x, &next_y, &status);
+        if(status==0)
+            queue_push(next_x, next_y);
+        // printf("\033[%d;%dH%s%d", n+2, 0, "queue_size: ", queue_size);
+        // fflush(stdout);
+        // usleep(40000);
     }
+    // printf("end\n");
 }
 
 int main(){
@@ -245,7 +266,6 @@ int main(){
     // else if(mode==2){
     //     solve_random_matrix();
     // }
-    int n = 20;
     init_matrix(n);
     print_matrix(n);
     generate_matrix(n);
