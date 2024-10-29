@@ -147,7 +147,9 @@ int main(){
             parent->right = node;
         }
     }
-    printf("[ERROR] %d nodes are deprecated because no parent node found!\n", deprecated_nodes_count);
+    if(deprecated_nodes_count>0){
+        printf("[ERROR] %d nodes are deprecated because no parent node found!\n", deprecated_nodes_count);
+    }
     
     // 打印二叉树
     char pre[200];
