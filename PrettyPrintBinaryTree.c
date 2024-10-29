@@ -23,6 +23,7 @@ TreeNode* createNode(int data){
 }
 
 void pretty_print(TreeNode* root, char* pre, int depth){
+    // 漂亮地打印二叉树
     for(int i=0;i<depth;i++){
         printf("%c", pre[i]);
     }
@@ -34,13 +35,21 @@ void pretty_print(TreeNode* root, char* pre, int depth){
             strncpy(pre+i,"   ",9);
         }
     }
-    if(root->left != NULL){
+    if(root->left != NULL && root->right != NULL){
         strcpy(pre + depth, "├──");
         depth += LEN;
         pretty_print(root->left, pre, depth);
         depth -= LEN;
-    }
-    if(root->right != NULL){
+        strcpy(pre + depth, "└──");
+        depth += LEN;
+        pretty_print(root->right, pre, depth);
+        depth -= LEN;
+    }else if(root->left != NULL){
+        strcpy(pre + depth, "└──");
+        depth += LEN;
+        pretty_print(root->left, pre, depth);
+        depth -= LEN;
+    }else if(root->right != NULL){
         strcpy(pre + depth, "└──");
         depth += LEN;
         pretty_print(root->right, pre, depth);
@@ -94,6 +103,7 @@ int get_max_width(TreeNode* root){
 }
 
 int main(){
+    // Windows下设置UTF-8编码
     #ifdef _WIN32
     SetConsoleOutputCP(CP_UTF8);
     #endif
@@ -139,6 +149,7 @@ int main(){
     }
     printf("[ERROR] %d nodes are deprecated because no parent node found!\n", deprecated_nodes_count);
     
+    // 打印二叉树
     char pre[200];
     printf("[INFO] The binary tree is: \n");
     pretty_print(root, pre, 0);
