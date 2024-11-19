@@ -256,6 +256,10 @@ void generate_matrix(){
 
 
 int main(){
+    // Windows下设置UTF-8编码
+    #ifdef _WIN32
+    SetConsoleOutputCP(CP_UTF8);
+    #endif
     srand(time(NULL));  // 设置随机数种子
     clearScreen();
     printf("Choose a mode.\n1. Manual input\n2. Random input\nYour choice: ");
@@ -265,7 +269,7 @@ int main(){
         input_matrix();
         print_matrix();
         solve_matrix(1,0);
-        // stack_print();
+        stack_print();
     }else if(mode==2){
         clearScreen();
         printf("Please input the size of the matrix: ");
@@ -276,6 +280,7 @@ int main(){
         usleep(100000);
         solve_matrix(1,0);
         print(n+1,0,"\n", 1);
+        stack_print();
     }
     return 0;
 }

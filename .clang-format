@@ -1,0 +1,8 @@
+BasedOnStyle: VisualStudio
+BraceWrapping:
+AfterClass: true
+AfterControlStatement: true
+AfterFunction: true
+AfterNamespace: true
+AfterStruct: true
+AfterUnion: true
