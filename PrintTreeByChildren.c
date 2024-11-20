@@ -49,27 +49,23 @@ void printByChildren(Tree* root){
 
 
 Tree* input(){
-    char chr[100];
-    printf("请输入二叉树的字符序列：");
-    scanf("%s", chr);
-
     Tree* root = NULL;
     Tree* arr[100];
     arr[0] = root;
     int depth = 0;
 
-    char* c = chr;
-    printf("#\n");
-    while(*c != '\0'){
-        if(*c == ' '){
-            c++;
+    printf("请输入二叉树的字符序列：");
+    char c = getchar();
+    while(c != '\n'){
+        if(c == ' '){
+            c = getchar();
             continue;
         }
-        if(*c == ','){
-            c++;
+        if(c == ','){
+            c = getchar();
             continue;
         }
-        if(*c == '('){
+        if(c == '('){
             // Tree* now = arr[depth - 1];
             // List* cur = now->children;
             // while (cur->next != NULL){
@@ -77,20 +73,20 @@ Tree* input(){
             // }
             // arr[depth] = cur->value;
             depth++;
-            c++;
+            c = getchar();
             continue;
         }
-        if(*c == ')'){
+        if(c == ')'){
             depth--;
-            c++;
+            c = getchar();
             continue;
         }
-        if((*c >= 'a' && *c <= 'z') || (*c >= 'A' && *c <= 'Z')){
+        if((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')){
             if(root == NULL){
-                root = createNode(*c);
+                root = createNode(c);
                 arr[depth] = root;
             } else{
-                Tree* now = createNode(*c);
+                Tree* now = createNode(c);
                 Tree* parent = arr[depth - 1];
                 List* cur = parent->children;
                 if(cur == NULL){
@@ -107,7 +103,7 @@ Tree* input(){
                 }
                 arr[depth] = now;
             }
-            c++;
+            c = getchar();
         }
     }
     return root;
