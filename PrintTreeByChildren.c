@@ -21,25 +21,27 @@ Tree* createNode(int value){
 }
 
 void printPreorder(Tree* root){
-    if (root == NULL) return;
+    if(root == NULL) return;
     printf("%d ", root->value);
     List* cur = root->children;
-    while (cur != NULL){
+    while(cur != NULL){
         printPreorder(cur->value);
         cur = cur->next;
     }
 }
 
 void printByChildren(Tree* root){
-    if (root == NULL) return;
+    if(root == NULL) return;
     List* cur = root->children;
-    while (cur != NULL){
-        printf("%d ", cur->value->value);
+    printf("%c -> ", root->value);
+    while(cur != NULL){
+        printf("%c ", cur->value->value);
+        printf(" -> ");
         cur = cur->next;
     }
-    printf("\n");
+    printf("^\n");
     cur = root->children;
-    while (cur != NULL){
+    while(cur != NULL){
         printByChildren(cur->value);
         cur = cur->next;
     }
@@ -47,55 +49,65 @@ void printByChildren(Tree* root){
 
 
 Tree* input(){
-    char c;
+    char chr[100];
+    printf("请输入二叉树的字符序列：");
+    scanf("%s", chr);
+
     Tree* root = NULL;
     Tree* arr[100];
+    arr[0] = root;
     int depth = 0;
-    c = getchar();
-    while (c != '\n'){
-        if (c == ' '){
-            c = getchar();
+
+    char* c = chr;
+    printf("#\n");
+    while(*c != '\0'){
+        if(*c == ' '){
+            c++;
             continue;
         }
-        if (c == '('){
-            Tree* now = arr[depth - 1];
-            List* cur = now->children;
-            while (cur->next != NULL){
-                cur = cur->next;
-            }
-            arr[depth] = cur->value;
-            c = getchar();
-            continue;   
+        if(*c == ','){
+            c++;
+            continue;
         }
-        if (c == ')'){
+        if(*c == '('){
+            // Tree* now = arr[depth - 1];
+            // List* cur = now->children;
+            // while (cur->next != NULL){
+            //     cur = cur->next;
+            // }
+            // arr[depth] = cur->value;
+            depth++;
+            c++;
+            continue;
+        }
+        if(*c == ')'){
             depth--;
-            c = getchar();
+            c++;
             continue;
         }
-        if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')){
-            if (root == NULL){
-                root = createNode(c);
+        if((*c >= 'a' && *c <= 'z') || (*c >= 'A' && *c <= 'Z')){
+            if(root == NULL){
+                root = createNode(*c);
                 arr[depth] = root;
-                depth++;
-            }
-            else{
-                Tree* now = createNode(c);
+            } else{
+                Tree* now = createNode(*c);
                 Tree* parent = arr[depth - 1];
                 List* cur = parent->children;
-                if (cur == NULL){
+                if(cur == NULL){
                     parent->children = (List*)malloc(sizeof(List));
                     parent->children->value = now;
                     parent->children->next = NULL;
-                }
-                else{
-                    while (cur->next != NULL){
+                } else{
+                    while(cur->next != NULL){
                         cur = cur->next;
                     }
                     cur->next = (List*)malloc(sizeof(List));
                     cur->next->value = now;
                     cur->next->next = NULL;
                 }
+                arr[depth] = now;
             }
+            c++;
         }
     }
     return root;
