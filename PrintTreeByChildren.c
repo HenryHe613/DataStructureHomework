@@ -22,7 +22,7 @@ Tree* createNode(int value){
 
 void printPreorder(Tree* root){
     if(root == NULL) return;
-    printf("%d ", root->value);
+    printf("%c ", root->value);
     List* cur = root->children;
     while(cur != NULL){
         printPreorder(cur->value);
@@ -36,7 +36,7 @@ void printByChildren(Tree* root){
     printf("%c -> ", root->value);
     while(cur != NULL){
         printf("%c ", cur->value->value);
-        printf(" -> ");
+        printf("-> ");
         cur = cur->next;
     }
     printf("^\n");
@@ -47,40 +47,19 @@ void printByChildren(Tree* root){
     }
 }
 
-
 Tree* input(){
     Tree* root = NULL;
     Tree* arr[100];
     arr[0] = root;
     int depth = 0;
-
+    printf("举例: A(B(D,E),C(F,G))\n");
     printf("请输入二叉树的字符序列：");
     char c = getchar();
     while(c != '\n'){
-        if(c == ' '){
-            c = getchar();
-            continue;
-        }
-        if(c == ','){
-            c = getchar();
-            continue;
-        }
-        if(c == '('){
-            // Tree* now = arr[depth - 1];
-            // List* cur = now->children;
-            // while (cur->next != NULL){
-            //     cur = cur->next;
-            // }
-            // arr[depth] = cur->value;
+        if(c == '(')
             depth++;
-            c = getchar();
-            continue;
-        }
-        if(c == ')'){
+        if(c == ')')
             depth--;
-            c = getchar();
-            continue;
-        }
         if((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')){
             if(root == NULL){
                 root = createNode(c);
@@ -103,8 +82,8 @@ Tree* input(){
                 }
                 arr[depth] = now;
             }
-            c = getchar();
         }
+        c = getchar();
     }
     return root;
 }
@@ -112,6 +91,10 @@ Tree* input(){
 
 int main(){
     Tree* root = input();
+    printf("先序遍历: \n");
+    printPreorder(root);
+    printf("\n");
+    printf("孩子表示法: \n");
     printByChildren(root);
     return 0;
 }
