@@ -4,9 +4,14 @@
 #include<string.h>
 #include<unistd.h>
 #include<time.h>
+#ifdef _WIN32
+#include <windows.h>
+#define usleep(x) Sleep((x)/1000)
+#endif
+#define NMAX 50
 
 
-const int NMAX = 50;
+
 int matrix[NMAX][NMAX];
 int n=20;
 int queue_size = 0;
@@ -256,21 +261,28 @@ void generate_matrix(){
 
 
 int main(){
-    // Windows下设置UTF-8编码
+    #ifdef _WIN32
+    #endif
     #ifdef _WIN32
     SetConsoleOutputCP(CP_UTF8);
+    DWORD mode;
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    GetConsoleMode(hConsole, &mode);
+    mode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+    SetConsoleMode(hConsole, mode);
     #endif
-    srand(time(NULL));  // 设置随机数种子
+    srand(time(NULL));
     clearScreen();
     printf("Choose a mode.\n1. Manual input\n2. Random input\nYour choice: ");
-    int mode = 0;
-    scanf("%d", &mode);
-    if(mode==1){
+    int type = 0;
+    scanf("%d", &type);
+    getchar();
+    if(type==1){
         input_matrix();
         print_matrix();
         solve_matrix(1,0);
         stack_print();
-    }else if(mode==2){
+    }else if(type==2){
         clearScreen();
         printf("Please input the size of the matrix: ");
         scanf("%d", &n);
@@ -282,5 +294,7 @@ int main(){
         print(n+1,0,"\n", 1);
         stack_print();
     }
+    printf("按任意键退出...\n");
+    getchar(); // 等待用户输入
     return 0;
 }

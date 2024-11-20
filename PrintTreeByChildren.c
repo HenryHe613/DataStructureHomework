@@ -1,5 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
+#ifdef _WIN32
+#include<windows.h>
+#endif
+
 typedef struct Tree Tree;
 typedef struct List List;
 
@@ -90,6 +94,15 @@ Tree* input(){
 
 
 int main(){
+    // Windows下设置UTF-8编码
+    #ifdef _WIN32
+    SetConsoleOutputCP(CP_UTF8);
+    DWORD mode;
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    GetConsoleMode(hConsole, &mode);
+    mode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+    SetConsoleMode(hConsole, mode);
+    #endif
     Tree* root = input();
     printf("先序遍历: \n");
     printPreorder(root);
