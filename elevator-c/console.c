@@ -1,16 +1,17 @@
 #include "console.h"
 #include "draw.h"
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
 
 #ifdef _WIN32
 // Windows 下通过 GetConsoleScreenBufferInfo 获取控制台大小
 #else
 #include <unistd.h>
 // Linux 下无直接API获取控制台大小，简单设定默认值或使用 ANSI 询问
-// 此处简单假设控制台宽80，高24行
 #endif
 
-// 全局常量
 const int xPassengerConsoleStart = BORDERWIDTH + ELEVATOR_WIDTH + FLOOR_WIDTH + 1;
 const int yPassengerConsoleStart = BORDERWIDTH;
 
@@ -23,13 +24,8 @@ void printPassengerLog(const char *s) {
     DrawString(s, x, y);
 }
 
-// 未知函数：testLog，保持函数名称和用法（空实现）
-void testLog(const char* s) {
-    (void)s; // 未知用法，空实现
-}
-
 // 清屏函数
-static void clearScreen() {
+void clearScreen() {
 #ifdef _WIN32
     system("cls");
 #else
@@ -38,7 +34,7 @@ static void clearScreen() {
 }
 
 // 获取控制台大小的函数（若需要）
-static void getConsoleSize(int *maxWidth, int *maxHeight) {
+void getConsoleSize(int *maxWidth, int *maxHeight) {
 #ifdef _WIN32
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -79,7 +75,7 @@ void printLogWithMargin(int x, int y, char logs[][100], int logs_count) {
             currentY = y;
         }
 
-        setCursorPosition(x, currentY);
+        setCursorPositionWithGrid(x, currentY);
 
         // 打印时防止超宽
         char buffer[200];

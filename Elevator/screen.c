@@ -18,7 +18,7 @@ void screenClear() {
 
 // 在指定位置打印字符串
 void screenPrint(int x, int y, char* s){
-    printf("\033[%d;%dH%s", x, y*2, s);
+    printf("\033[%d;%dH%s", x+1, y+1, s);
     fflush(stdout);
 }
 
@@ -85,9 +85,18 @@ int screenInit(){
 }
 
 int main(){
-    while(screenInit()){
-        continue;
+    screenClear();
+    for(int i=1;i<80;i++){
+        screenPrint(0,i,"─");
+        screenPrint(32, i, "─");
     }
-    hideCursor();
-    return 0;
+    for(int i=1;i<30;i++){
+        screenPrint(i,0,"│");
+        screenPrint(i,84,"│");
+    }
+    screenPrint(0,0,"┌");
+    screenPrint(0,84,"┐");
+    screenPrint(32,0,"└");
+    screenPrint(32,84,"┘");
+    screenPrint(34, 10, "End\n");
 }
