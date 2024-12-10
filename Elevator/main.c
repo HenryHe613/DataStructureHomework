@@ -1,9 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <time.h>
 #ifdef _WIN32
-#include<windows.h>
+#include <windows.h>
+#include <conio.h>
+#else
+#include <unistd.h>
 #endif
 
 #define WIDTH 50
@@ -16,12 +18,48 @@
 #define FLOOR_WIDTH 8
 #define TIME 50000
 
+#ifdef _WIN32
+void initConsole(){
+    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    DWORD dwMode = 0;
+    GetConsoleMode(hOut, &dwMode);
+    dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+    SetConsoleMode(hOut, dwMode);
+}
+
+void hideCursor()
+{
+    HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_CURSOR_INFO CursorInfo;
+    GetConsoleCursorInfo(handle, &CursorInfo);
+    CursorInfo.bVisible = FALSE;
+    SetConsoleCursorInfo(handle, &CursorInfo);
+}
+
+void gotoxy(int x, int y){
+    COORD pos;
+    pos.X = y;
+    pos.Y = x;
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
+}
+#endif
+
 void screenPrintString(int x, int y, char* s){
+#ifdef _WIN32
+    gotoxy(x, y);
+    printf("%s", s);
+    fflush(stdout);
+#else
     printf("\033[%d;%dH%s", x+1, y*2+1, s);
     fflush(stdout);
 }
 
 void screenPrintNumber(int x, int y, int d){
+#ifdef _WIN32
+    gotoxy(x, y);
+    printf("%d", d);
+    fflush(stdout);
+#else
     printf("\033[%d;%dH%d", x+1, y*2+1, d);
     fflush(stdout);
 }
@@ -239,8 +277,13 @@ void run(){
 // Main
 
 int main(){
-    printf("\033[?25l"); //hide cursor
+#ifdef _WIN32
+    initConsole();
+    hideCursor();
+#else
+    printf("\033[?25l"); // hide cursor
     fflush(stdout);
+#endif
     srand(time(NULL)); // random seed
     initBlock();
     refreshElevator();
