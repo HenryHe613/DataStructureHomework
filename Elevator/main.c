@@ -183,9 +183,56 @@ void printFloor(){
 //Logic
 
 void run(){
-    for(int i=0;i<50;i++){
-        generatePeople();
-        usleep(100000);
+    while(1){
+        for(int i=0;i<rand()%2;i++)
+            generatePeople();
+        if(elevator.floor==FLOOR_COUNT){
+            elevator.direction = -1;
+        }else if(elevator.floor==1){
+            elevator.direction = 1;
+        }
+        int nextFloor=0;
+        if(elevator.direction==1){
+            nextFloor = elevator.floor+1;
+            for(int i=0;i<peoCur;i++){
+                if(people[i].nowFloor<nextFloor && people[i].onElevator==0 && people[i].nowFloor>elevator.floor){
+                    nextFloor = people[i].nowFloor;
+                }
+            }
+        }else{
+            nextFloor = elevator.floor-1;
+            for(int i=0;i<peoCur;i++){
+                if(people[i].nowFloor>nextFloor && people[i].onElevator==0 && people[i].nowFloor<elevator.floor){
+                    nextFloor = people[i].nowFloor;
+                }
+            }
+        }
+        elevatorGo(nextFloor);
+        for(int i=0;i<peoCur;i++){
+            if(people[i].targetFloor==elevator.floor && people[i].onElevator==1){
+                elevator.weight -= people[i].weight;
+                elevator.count--;
+                char logContent[100];
+                snprintf(logContent, 100, "Leave: %s, Go: %d, Now: %d", people[i].name, people[i].targetFloor, people[i].nowFloor);
+                printLog(logContent);
+                for(int j=i;j<peoCur-1;j++){
+                    people[j] = people[j+1];
+                }
+                peoCur--;
+            }
+        }
+        for(int i=0;i<peoCur;i++){
+            if(people[i].nowFloor==elevator.floor && people[i].onElevator==0 && elevator.weight+people[i].weight<=ELEVATOR_WEIGHT){
+                people[i].onElevator = 1;
+                elevator.weight += people[i].weight;
+                elevator.count++;
+                char logContent[100];
+                snprintf(logContent, 100, "On: %s, Go: %d, Now: %d", people[i].name, people[i].targetFloor, people[i].nowFloor);
+                printLog(logContent);
+            }
+        }
+        refreshElevator();
+        usleep(TIME*20);
     }
 }
 
