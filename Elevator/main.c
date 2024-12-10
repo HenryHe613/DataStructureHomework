@@ -20,11 +20,17 @@
 
 #ifdef _WIN32
 void initConsole(){
-    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-    DWORD dwMode = 0;
-    GetConsoleMode(hOut, &dwMode);
-    dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-    SetConsoleMode(hOut, dwMode);
+    // HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    // DWORD dwMode = 0;
+    // GetConsoleMode(hOut, &dwMode);
+    // dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+    // SetConsoleMode(hOut, dwMode);
+    SetConsoleOutputCP(CP_UTF8);
+    DWORD mode;
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    GetConsoleMode(hConsole, &mode);
+    mode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+    SetConsoleMode(hConsole, mode);
 }
 
 void hideCursor()
@@ -46,22 +52,24 @@ void gotoxy(int x, int y){
 
 void screenPrintString(int x, int y, char* s){
 #ifdef _WIN32
-    gotoxy(x, y);
+    gotoxy(x+1, y*2+1);
     printf("%s", s);
     fflush(stdout);
 #else
     printf("\033[%d;%dH%s", x+1, y*2+1, s);
     fflush(stdout);
+#endif
 }
 
 void screenPrintNumber(int x, int y, int d){
 #ifdef _WIN32
-    gotoxy(x, y);
+    gotoxy(x+1, y*2+1);
     printf("%d", d);
     fflush(stdout);
 #else
     printf("\033[%d;%dH%d", x+1, y*2+1, d);
     fflush(stdout);
+#endif
 }
 
 // Log
@@ -156,12 +164,20 @@ void elevatorGo(int floor){
     if(floor>elevator.floor){
         for(int i=0;i<(floor-elevator.floor)*FLOOR_HEIGHT;i++){
             elevatorUp();
-            usleep(TIME);
+#ifdef _WIN32
+            Sleep(TIME/1000);
+#else
+            usleep(TIME*20);
+#endif
         }
     }else if(floor<elevator.floor){
         for(int i=0;i<(elevator.floor-floor)*FLOOR_HEIGHT;i++){
             elevatorDown();
-            usleep(TIME);
+#ifdef _WIN32
+            Sleep(TIME/1000);
+#else
+            usleep(TIME*20);
+#endif
         }
     }
     elevator.floor = floor;
@@ -270,7 +286,11 @@ void run(){
             }
         }
         refreshElevator();
+#ifdef _WIN32
+        Sleep(TIME/1000);
+#else
         usleep(TIME*20);
+#endif
     }
 }
 
@@ -292,4 +312,3 @@ int main(){
     screenPrintString(HEIGHT+1, 10, "\n");
     return 0;
 }
-
