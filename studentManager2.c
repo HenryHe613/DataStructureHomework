@@ -85,12 +85,12 @@ void addStudent(){
 
 void deleteStudent(){
     printf("请输入学生姓名: ");
-    char name;
-    scanf("%s",&name);
+    char name[100];
+    scanf("%s",name);
     Student* p = stu_head->next;
     Student* q = stu_head;
     while(p!=NULL){
-        if(strcmp(p->name, &name)==0){
+        if(strcmp(p->name, name)==0){
             if(q!=NULL)
                 q->next = p->next;
             free(p);
@@ -104,11 +104,11 @@ void deleteStudent(){
 
 void modifyStudent(){
     printf("请输入学生姓名: ");
-    char name;
-    scanf("%s",&name);
+    char name[100];
+    scanf("%s",name);
     Student* p = stu_head->next;
     while(p!=NULL){
-        if(strcmp(p->name, &name)==0){
+        if(strcmp(p->name, name)==0){
             printf("请输入学生学校: ");
             scanf("%s",p->school);
             printf("请输入学生专业: ");
@@ -125,15 +125,17 @@ void modifyStudent(){
 
 void queryStudent(){
     printf("请输入学生姓名: ");
-    char name;
-    scanf("%s",&name);
+    char name[100];
+    scanf("%s",name);
     Student* p = stu_head->next;
     while(p!=NULL){
-        if(strcmp(p->name, &name)==0){
+        if(strcmp(p->name, name)==0){
             printf("学生姓名: %s\n", p->name);
             printf("学生学校: %s\n", p->school);
             printf("学生专业: %s\n", p->major);
             printf("学生班级: %s\n", p->class);
+            printf("按下回车等待1秒返回主菜单\n");
+            getchar();
             return;
         }
         p = p->next;
@@ -186,12 +188,15 @@ void printStudent(){
         if(strcmp(p->school, q->school)==0){
             if(strcmp(p->major, q->major)==0){
                 if(strcmp(p->class, q->class)==0){
-                    printf("            └─ %s\n", p->name);
+                    for(int i=0;i<strlen(p->school)+strlen(p->major)+strlen(p->class)+6;i++) printf(" ");
+                    printf(" └─── %s\n", p->name);
                 }else{
-                    printf("      └─  %s ── %s\n", p->class, p->name);
+                    for(int i=0;i<strlen(p->school)+strlen(p->major)+2;i++) printf(" ");
+                    printf(" └─── %s ── %s\n", p->class, p->name);
                 }
             }else{
-                printf("  └─ %s ── %s ── %s\n",p->major, p->class, p->name);
+                for(int i=0;i<strlen(p->school)+4;i++) printf(" ");
+                printf(" └─ %s ── %s ── %s\n",p->major, p->class, p->name);
             }
         }else{
             printf("%s ── %s ── %s ── %s\n", p->school, p->major, p->class, p->name);
@@ -199,6 +204,8 @@ void printStudent(){
         q = p;
         p = p->next;
     }
+    printf("按下回车等待1秒返回主菜单\n");
+    getchar();
 }
 
 // save & load
@@ -263,8 +270,8 @@ int main(){
         homeScreen();
         scanf("%d", &op);
         getchar(); // eat '\n'
-        clearScreen();
-        moveCursor(1, 1);
+        // clearScreen();
+        // moveCursor(1, 1);
         switch(op){
             case 1:
                 addStudent();
