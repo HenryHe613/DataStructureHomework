@@ -167,7 +167,7 @@ void elevatorGo(int floor){
 #ifdef _WIN32
             Sleep(TIME/1000);
 #else
-            usleep(TIME*20);
+            usleep(TIME);
 #endif
         }
     }else if(floor<elevator.floor){
@@ -176,7 +176,7 @@ void elevatorGo(int floor){
 #ifdef _WIN32
             Sleep(TIME/1000);
 #else
-            usleep(TIME*20);
+            usleep(TIME);
 #endif
         }
     }
@@ -289,7 +289,7 @@ void run(){
 #ifdef _WIN32
         Sleep(TIME/1000);
 #else
-        usleep(TIME*20);
+        usleep(TIME*2);
 #endif
     }
 }
