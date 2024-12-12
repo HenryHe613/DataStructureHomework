@@ -9,7 +9,7 @@
 #include <unistd.h>
 #endif
 
-
+// string
 
 void read_dynamic_string(char **str) {
     // if(*str != NULL) free(*str);
@@ -18,7 +18,6 @@ void read_dynamic_string(char **str) {
     char temp;
     *str = malloc(capacity * sizeof(char));
     if(*str == NULL) return;
-
     while((temp = getchar()) != '\n'){
         if(length + 1 >= capacity){
             capacity += 10;
@@ -35,87 +34,11 @@ void read_dynamic_string(char **str) {
     (*str)[length] = '\0';
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 // screen
-
-#ifdef _WIN32
-void initConsole(){
-    // HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-    // DWORD dwMode = 0;
-    // GetConsoleMode(hOut, &dwMode);
-    // dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-    // SetConsoleMode(hOut, dwMode);
-    SetConsoleOutputCP(CP_UTF8);
-    DWORD mode;
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    GetConsoleMode(hConsole, &mode);
-    mode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-    SetConsoleMode(hConsole, mode);
-}
-
-void hideCursor()
-{
-    HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
-    CONSOLE_CURSOR_INFO CursorInfo;
-    GetConsoleCursorInfo(handle, &CursorInfo);
-    CursorInfo.bVisible = FALSE;
-    SetConsoleCursorInfo(handle, &CursorInfo);
-}
-
-void gotoxy(int x, int y){
-    COORD pos;
-    pos.X = y;
-    pos.Y = x;
-    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
-}
-#endif
 
 void moveCursor(int row, int col) {
     printf("\033[%d;%dH", row, col);
     fflush(stdout);
-}
-
-void screenPrintString(int x, int y, char* s){
-#ifdef _WIN32
-    gotoxy(x+1, y*2+1);
-    printf("%s", s);
-    fflush(stdout);
-#else
-    printf("\033[%d;%dH%s", x+1, y*2+1, s);
-    fflush(stdout);
-#endif
-}
-
-void screenPrintNumber(int x, int y, int d){
-#ifdef _WIN32
-    gotoxy(x+1, y*2+1);
-    printf("%d", d);
-    fflush(stdout);
-#else
-    printf("\033[%d;%dH%d", x+1, y*2+1, d);
-    fflush(stdout);
-#endif
-}
-
-void initScreen(){
-#ifdef _WIN32
-    initConsole();
-    hideCursor();
-#else
-    printf("\033[?25l"); // hide cursor
-    fflush(stdout);
-#endif
 }
 
 void clearScreen(){
@@ -146,6 +69,7 @@ void slp(int ms){ // sleep
 }
 
 // student
+
 typedef struct Student Student;
 struct Student{
     char *name;
@@ -245,12 +169,17 @@ void queryStudent(){
     slp(1000);
 }
 
-
-
-
-
+// main
 
 int main(){
+#ifdef _WIN32
+    SetConsoleOutputCP(CP_UTF8);
+    DWORD mode;
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    GetConsoleMode(hConsole, &mode);
+    mode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+    SetConsoleMode(hConsole, mode);
+#endif
     int op;
     stu_head = (Student*)malloc(sizeof(Student)*100);
     while(1){
