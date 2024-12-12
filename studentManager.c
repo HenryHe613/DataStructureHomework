@@ -11,27 +11,31 @@
 
 // string
 
-void read_dynamic_string(char **str) {
-    // if(*str != NULL) free(*str);
-    int capacity = 10;
+char *read_dynamic_string(){
+    char *str = NULL;
+    int capacity = 0;
     int length = 0;
     char temp;
-    *str = malloc(capacity * sizeof(char));
-    if(*str == NULL) return;
     while((temp = getchar()) != '\n'){
         if(length + 1 >= capacity){
             capacity += 10;
-            char *new_str = realloc(*str, capacity * sizeof(char));
+            char *new_str = realloc(str, capacity * sizeof(char));
             if(new_str == NULL){
-                free(*str);
-                *str = NULL;
-                return;
+                free(str);
+                printf("内存分配失败！\n");
+                return NULL;
             }
-            *str = new_str;
+            str = new_str;
         }
-        (*str)[length++] = temp;
+        str[length++] = temp;
     }
-    (*str)[length] = '\0';
+    if(str){
+        str[length] = '\0';
+    }else{ 
+        str = malloc(1);
+        if(str) str[0] = '\0';
+    }
+    return str;
 }
 
 // screen
@@ -81,19 +85,23 @@ struct Student{
 Student* stu_head;
 
 void addStudent(){
-    clearScreen();
-    moveCursor(1, 1);
     Student* stu = (Student*)malloc(sizeof(Student));
     printf("请输入学生姓名: ");
-    read_dynamic_string(&stu->name);
+    stu->name = read_dynamic_string();
     printf("请输入学生学校: ");
-    read_dynamic_string(&stu->school);
+    stu->school = read_dynamic_string();
     printf("请输入学生专业: ");
-    read_dynamic_string(&stu->major);
+    stu->major = read_dynamic_string();
     printf("请输入学生班级: ");
-    read_dynamic_string(&stu->class);
-    Student* p = stu_head;
-    while(p->next!=NULL){
+    stu->class = read_dynamic_string();
+    Student* p = stu_head->next;
+    while(p!=NULL){
+        if(strcmp(p->name, stu->name)==0){
+            printf("学生已存在\n");
+            free(stu);
+            slp(1000);
+            return;
+        }
         p = p->next;
     }
     p->next = stu;
@@ -101,11 +109,9 @@ void addStudent(){
 }
 
 void deleteStudent(){
-    clearScreen();
-    moveCursor(1, 1);
     printf("请输入学生姓名: ");
     char *name;
-    read_dynamic_string(&name);
+    name = read_dynamic_string();
     Student* p = stu_head->next;
     while(p!=NULL){
         if(strcmp(p->name, name)==0){
@@ -123,20 +129,18 @@ void deleteStudent(){
 }
 
 void modifyStudent(){
-    clearScreen();
-    moveCursor(1, 1);
     printf("请输入学生姓名: ");
     char *name;
-    read_dynamic_string(&name);
+    name = read_dynamic_string();
     Student* p = stu_head->next;
     while(p!=NULL){
         if(strcmp(p->name, name)==0){
             printf("请输入学生学校: ");
-            read_dynamic_string(&p->school);
+            p->school = read_dynamic_string();
             printf("请输入学生专业: ");
-            read_dynamic_string(&p->major);
+            p->major = read_dynamic_string();
             printf("请输入学生班级: ");
-            read_dynamic_string(&p->class);
+            p->class = read_dynamic_string();
             printf("修改成功\n");
             slp(1000);
             return;
@@ -148,11 +152,9 @@ void modifyStudent(){
 }
 
 void queryStudent(){
-    clearScreen();
-    moveCursor(1, 1);
     printf("请输入学生姓名: ");
     char *name;
-    read_dynamic_string(&name);
+    name = read_dynamic_string();
     Student* p = stu_head->next;
     while(p!=NULL){
         if(strcmp(p->name, name)==0){
@@ -186,6 +188,8 @@ int main(){
         homeScreen();
         scanf("%d", &op);
         getchar(); // eat '\n'
+        clearScreen();
+        moveCursor(1, 1);
         switch(op){
             case 1:
                 addStudent();
