@@ -86,18 +86,18 @@ void addStudent(){
 void deleteStudent(){
     printf("请输入学生姓名: ");
     char name[100];
-    scanf("%s",name);
+    scanf("%s", name);
     Student* p = stu_head->next;
     Student* q = stu_head;
-    while(p!=NULL){
-        if(strcmp(p->name, name)==0){
-            if(q!=NULL)
-                q->next = p->next;
+    while(p != NULL){
+        if(strcmp(p->name, name) == 0){
+            q->next = p->next;
             free(p);
             printf("删除成功\n");
             return;
         }
-        p = p->next;
+        q = p;        // 将 q 移动到当前的 p
+        p = p->next;  // p 移动到下一个节点
     }
     printf("未找到该学生\n");
 }
