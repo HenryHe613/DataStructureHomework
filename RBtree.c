@@ -1,5 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 // 红黑树的节点颜色定义
 typedef enum { RED, BLACK } NodeColor;
@@ -156,6 +159,9 @@ void inorderRBTree(RBTree *tree, RBTreeNode *node) {
 }
 
 int main() {
+#ifdef _WIN32
+    SetConsoleOutputCP(CP_UTF8);
+#endif
     RBTree *tree = createRBTree();
 
     insertRBTree(tree, 10);
